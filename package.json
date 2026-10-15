@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "showdown": "tsx scripts/showdown.ts"
+    "showdown": "tsx scripts/showdown.ts",
+    "og": "tsx scripts/og-image.tsx"
   },
   "dependencies": {
     "motion": "^12.43.0",
