@@ -13,6 +13,7 @@ function commitSha(): string {
 
 const nextConfig: NextConfig = {
   output: "export",
+  devIndicators: false,
   images: { unoptimized: true },
   trailingSlash: true,
   env: {

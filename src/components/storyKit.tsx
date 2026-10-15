@@ -1,14 +1,55 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 export const EASE = [0.25, 0.6, 0.25, 1] as const;
+/** Zoom that fits `need` px of slide content into `have` px, never below a readable floor. */
+export function fitZoom(need: number, have: number, floor = 0.72): number {
+  if (!need || !have || need <= have) return 1;
+  return Math.max(floor, have / need);
+}
+
+/**
+ * Short phones (an iPhone SE is 667px tall) cannot hold the densest slides at full size. Measure the slide's natural
+ * height and, only when it overflows, zoom it down to fit, widening it by the same factor so the gutters stay put.
+ */
+function useFitToScreen() {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const box = el?.parentElement;
+    if (!el || !box) return;
+    const fit = () => {
+      el.style.zoom = el.style.height = el.style.width = el.style.maxWidth = "";
+      el.style.height = "auto";
+      const next = fitZoom(el.offsetHeight, box.clientHeight);
+      el.style.height = "";
+      if (next < 1) {
+        el.style.zoom = String(next);
+        el.style.height = `${box.clientHeight / next}px`;
+        el.style.width = `calc(100% / ${next})`;
+        el.style.maxWidth = `calc(min(1500px, 94vw) / ${next})`;
+      }
+    };
+    fit();
+    // content can grow after mount (a quote swaps in, fonts load), so re-fit when any block changes size
+    const ro = new ResizeObserver(() => requestAnimationFrame(fit));
+    ro.observe(box);
+    for (const c of el.children) ro.observe(c);
+    void document.fonts?.ready.then(fit);
+    return () => ro.disconnect();
+  }, []);
+  return ref;
+}
+
 /**
  * Slide backdrop: flat warm ink with a short accent rule at the top. `shift` crossfades that rule to another colour at
  * `at` seconds (a quiet one-shot beat, no flash). `shakeAt` is accepted for compatibility and ignored: no shaking.
  */
 export function Shell({ accent, children, shift }: { accent: string; children: React.ReactNode; shift?: { color: string; at: number }; shakeAt?: number }) {
   const reduced = useReducedMotion();
+  const fit = useFitToScreen();
   return (
     <div className="absolute inset-0 overflow-hidden bg-ink">
       <div className="pointer-events-none absolute left-[max(1.25rem,5vmin)] right-[max(1.25rem,5vmin)] top-[max(3.6rem,7.5vmin)] h-px bg-line" />
@@ -22,7 +63,7 @@ export function Shell({ accent, children, shift }: { accent: string; children: R
           transition={{ delay: shift.at, duration: 0.8 }}
         />
       )}
-      <div className="st-inner">{children}</div>
+      <div ref={fit} className="st-inner">{children}</div>
     </div>
   );
 }
