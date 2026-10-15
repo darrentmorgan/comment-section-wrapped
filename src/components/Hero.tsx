@@ -101,7 +101,7 @@ export function Hero({
       <div className="absolute inset-0 -z-10 bg-ink/[0.9]" />
 
       <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-[max(1.25rem,4vw)] pb-24 pt-28 sm:pt-24">
-        <h1 className="display text-[clamp(2.8rem,9.6vmin,8.2rem)] [@media(orientation:portrait)]:text-[clamp(3rem,12vw,8rem)] text-bone" aria-label="I made AI read your whole comment section.">
+        <h1 className="display text-[clamp(2.8rem,9.6vmin,8.2rem)] [@media(orientation:portrait)]:text-[clamp(2.4rem,12vw,8rem)] text-bone" aria-label="I made AI read your whole comment section.">
           <span className="headline-line"><span style={{ animationDelay: "0.05s" }}>I made AI</span></span>
           <span className="headline-line"><span style={{ animationDelay: "0.17s" }}>read your whole</span></span>
           <span className="headline-line"><span style={{ animationDelay: "0.29s" }}>comment section.</span></span>
@@ -111,14 +111,14 @@ export function Hero({
           initial={reduced ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.8 }}
-          className="mt-[3.2vmin] max-w-[34ch] text-[clamp(1.05rem,2.6vmin,1.6rem)] [@media(orientation:portrait)]:text-[clamp(1.3rem,3.6vw,2rem)] leading-snug text-mute"
+          className="mt-[3.2vmin] max-w-[34ch] text-[clamp(1.05rem,2.6vmin,1.6rem)] [@media(orientation:portrait)]:text-[clamp(1.0625rem,3.6vw,2rem)] leading-snug text-mute"
         >
           An experiment in how models read a comment section. Watch a recorded run, or bring your own keys to read a channel and find its moods and recurring stories.
         </motion.p>
 
-        <div className="mt-[4vmin] flex flex-wrap items-center gap-4">
-          <button type="button" onClick={() => onReplay?.("latest")} className="bg-bone px-6 py-4 text-sm font-semibold text-ink hover:opacity-85">Watch the MrBeast run</button>
-          <button type="button" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded} className="border border-bone/40 px-6 py-4 text-sm text-bone hover:border-bone">Run it on any channel</button>
+        <div className="mt-[max(1.75rem,4vmin)] flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          <button type="button" onClick={() => onReplay?.("latest")} className="w-full bg-bone px-6 py-4 text-[15px] font-semibold text-ink hover:opacity-85 sm:w-auto sm:text-sm">Watch the MrBeast run</button>
+          <button type="button" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded} className="w-full border border-bone/40 px-6 py-4 text-[15px] text-bone hover:border-bone sm:w-auto sm:text-sm">Run it on any channel</button>
         </div>
         {recording && <p className="mt-3 text-sm text-mute">{recording.channelTitle} · {fmtInt(recording.comments)} comments · recorded run, no keys needed</p>}
         {error && <p role="alert" className="mt-4 border-l-2 border-toxic pl-3 text-sm text-bone">{error}</p>}

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { ClassifiedComment, Persona, PersonaKind, WrappedResult } from "@/lib/types";
-import { usePortrait } from "./usePortrait";
+import { usePhone, usePortrait } from "./usePortrait";
 import { EASE, Shell, Sub, Title } from "./storyKit";
 import { badDayCounts, cameraSafe } from "@/lib/personas";
 import { ArcTimeline, MiniArc, turningPoint } from "./ArcTimeline";
@@ -26,6 +26,7 @@ interface SlideDef {
 
 function IntroSlide({ r }: { r: WrappedResult }) {
   const portrait = usePortrait();
+  const phone = usePhone();
   const len = Array.from(r.channel.title).length;
   // short names get blown up to fill a phone frame; long ones stay legible
   const f = len <= 8 ? 1.4 : len <= 11 ? 1.2 : len <= 16 ? 1.0 : 0.8;
@@ -33,7 +34,7 @@ function IntroSlide({ r }: { r: WrappedResult }) {
     <Shell accent="#a98fb0">
       <div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, ease: EASE }}>
-          <Avatar name={r.channel.title} src={r.channel.avatar || undefined} size={portrait ? 190 : 110} alwaysShow className="ring-1 ring-bone/30" />
+          <Avatar name={r.channel.title} src={r.channel.avatar || undefined} size={phone ? 112 : portrait ? 190 : 110} alwaysShow className="ring-1 ring-bone/30" />
         </motion.div>
         <h2 className="display intro-title mt-6" style={{ ["--f" as string]: f }}>
           <span className="headline-line"><span style={{ animationDelay: "0.1s" }}>{r.channel.title}</span></span>
@@ -98,11 +99,12 @@ function VibeSlide({ r }: { r: WrappedResult }) {
 
 function PersonaBlock({ p, line, accent, delay = 0, compact = false }: { p: Persona; line: string; accent: string; delay?: number; compact?: boolean }) {
   const portrait = usePortrait();
+  const phone = usePhone();
   const pos = ((p.avgSentiment + 1) / 2) * 100;
   return (
     <div className="flex min-w-0 flex-col gap-[2.2dvh]">
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: delay + 0.15, duration: 0.7, ease: EASE }} className="flex items-center gap-4">
-        <Avatar name={p.authorName} src={p.authorAvatar} size={portrait && !compact ? 132 : 88} className="ring-1 ring-bone/30" />
+        <Avatar name={p.authorName} src={p.authorAvatar} size={phone ? (compact ? 52 : 72) : portrait && !compact ? 132 : 88} className="ring-1 ring-bone/30" />
         <div className="min-w-0">
           <Handle name={p.authorName} className="display-soft st-handle block truncate" />
           <span className="st-meta text-mute">{fmtInt(p.commentCount)} comments across {p.videoCount} videos</span>
@@ -271,13 +273,14 @@ function ArcSlide({ p, kind, title, accent, headline, stamp }: { p: Persona; kin
 
 function MostLoyalSlide({ m }: { m: NonNullable<WrappedResult["mostLoyal"]> }) {
   const portrait = usePortrait();
+  const phone = usePhone();
   const SEG = Math.min(m.totalVideos, 60);
   const lit = Math.round((m.videosCommented / m.totalVideos) * SEG);
   return (
     <Shell accent="#c9a049">
       <Title size="big" color="#c9a049">The most loyal</Title>
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7, ease: EASE }} className="flex items-center gap-4">
-        <Avatar name={m.authorName} src={m.authorAvatar} size={portrait ? 132 : 88} className="ring-1 ring-bone/30" />
+        <Avatar name={m.authorName} src={m.authorAvatar} size={phone ? 72 : portrait ? 132 : 88} className="ring-1 ring-bone/30" />
         <div className="min-w-0">
           <Handle name={m.authorName} className="display-soft st-handle block truncate" />
           <span className="st-meta text-mute">{fmtInt(m.commentCount)} comments</span>
@@ -675,7 +678,7 @@ export function Story({ result, onFinish, replay, showdown }: { result: WrappedR
 
       <div className="absolute left-[max(0.75rem,2vmin)] top-[calc(max(0.75rem,2vmin)+14px)] z-30 flex items-center gap-2" data-nonav>
         <button type="button" onClick={onFinish} className="border border-bone/20 bg-ink px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-bone/85 transition-colors hover:border-bone/50">
-          Skip to summary
+          Skip<span className="max-sm:hidden"> to summary</span>
         </button>
         {paused && <span className="bg-bone px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">Paused</span>}
       </div>

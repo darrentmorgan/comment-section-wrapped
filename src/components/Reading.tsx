@@ -81,7 +81,7 @@ export function Reading({ s, streamer }: { s: AnalyzeState; streamer: boolean })
   return (
     <section className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-ink">
       <CommentWall feed={s.samples} seq={s.seq} streamer={streamer} intensity={intensity} ambient={AMBIENT} preseed className="absolute inset-0 -z-10" />
-      <div className="absolute inset-0 -z-10 bg-ink/[0.86]" />
+      <div className="absolute inset-0 -z-10 bg-ink/[0.86] max-sm:bg-ink/[0.93]" />
 
       {/* stage rail */}
       <header className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-[max(1.25rem,4vw)] pt-[4.25rem]">

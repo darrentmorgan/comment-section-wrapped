@@ -392,3 +392,57 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ---------- phones ----------
+   The portrait multipliers above are tuned for 1080x1920 screen recordings, where vmin is large. On a phone vmin is
+   ~4px, so every clamp() sits on its minimum and the multiplier pushes quotes to ~35px and overflows the slide.
+   Phones get their own scale instead: 17-18px body, ~22px quotes, titles sized to fit 320-430px widths. */
+@media (orientation: portrait) and (max-width: 640px) {
+  .story-root {
+    --kt: 1;
+    --kb: 1;
+  }
+  .st-huge {
+    font-size: clamp(2.25rem, 10.5vw, 3rem);
+  }
+  .st-title {
+    font-size: clamp(1.875rem, 8.6vw, 2.5rem);
+  }
+  .st-hero-num {
+    font-size: clamp(3rem, 15vw, 4.25rem) !important;
+  }
+  .st-sub {
+    font-size: clamp(1.0625rem, 4.6vw, 1.25rem);
+  }
+  .st-quote {
+    font-size: clamp(1.25rem, 5.8vw, 1.5rem);
+    -webkit-line-clamp: 5;
+  }
+  .st-quote-sm {
+    font-size: clamp(1.0625rem, 4.6vw, 1.2rem);
+    -webkit-line-clamp: 3;
+  }
+  .st-meta {
+    font-size: clamp(0.875rem, 3.8vw, 1rem);
+  }
+  .st-handle {
+    font-size: clamp(1.25rem, 5.6vw, 1.5rem);
+  }
+  .st-foot {
+    font-size: 15px;
+  }
+  .intro-title {
+    font-size: clamp(2.5rem, calc(12vw * var(--f)), 5.5rem);
+  }
+  .st-inner {
+    /* safe: if a slide is still too tall it overflows downward, never off the top under the progress bar */
+    justify-content: safe center;
+    padding: max(5.5rem, 11dvh) 1.25rem max(2.5rem, 6dvh);
+    gap: 2.2dvh;
+  }
+}
+
+/* phone lanes are ~110px wide: the vibe stamp gets its own line instead of sitting on the handle */
+@media (max-width: 640px) {
+  .wcard .stamp { position: static; display: block; margin-bottom: 3px; }
+}
