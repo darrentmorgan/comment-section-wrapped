@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -15,11 +15,7 @@ const sans = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Comment Section Wrapped",
-  description:
-    "Paste a YouTube channel. The top ~1,000 comments on each of its recent videos get a mood, and the commenters with a story get a spotlight.",
-};
+export { metadata } from "./siteMetadata";
 
 export const viewport: Viewport = {
   themeColor: "#15130f",
