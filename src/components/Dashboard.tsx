@@ -9,7 +9,7 @@ import { type ShowdownView, ran } from "./showdown";
 import { ShowdownTable } from "./ShowdownTable";
 import { MiniArc } from "./ArcTimeline";
 import { fmtDuration, fmtInt, fmtMoney, fmtMonth, pct } from "./format";
-import { usePortrait } from "./usePortrait";
+import { usePhone, usePortrait } from "./usePortrait";
 import { Avatar, CommentText, Handle } from "./mask";
 import { KIND_META, VIBE_META, VIBE_ORDER, sentColor, spread } from "./vibes";
 
@@ -44,6 +44,8 @@ function PersonaCard({ p, i }: { p: Persona; i: number }) {
 export function Dashboard({ result: r, onReplay, onReset, showdown }: { result: WrappedResult; onReplay: () => void; onReset: () => void; showdown?: ShowdownView | null }) {
   const u = r.usage;
   const portrait = usePortrait();
+  // the 1.12em bump is for 1080x1920 recordings; on a real phone it makes body text oversized
+  const phone = usePhone();
   const [showAll, setShowAll] = useState(false);
   // 2 per archetype keeps the cast scannable; the rest is one click away
   const PER_KIND = 2;
@@ -59,7 +61,7 @@ export function Dashboard({ result: r, onReplay, onReset, showdown }: { result: 
   const scale = spread(r.perVideo.map((x) => x.avgSentiment));
   const sentOf = (id: string) => r.perVideo.find((x) => x.videoId === id)?.avgSentiment ?? 0;
   return (
-    <main className={`relative min-h-dvh overflow-hidden px-[max(1.25rem,4vw)] pb-20 pt-24 ${portrait ? "text-[1.12em]" : ""}`}>
+    <main className={`relative min-h-dvh overflow-hidden px-[max(1.25rem,4vw)] pb-20 pt-24 ${portrait && !phone ? "text-[1.12em]" : ""}`}>
       <div className="mx-auto max-w-[1280px]">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div className="flex items-center gap-4">
@@ -69,13 +71,13 @@ export function Dashboard({ result: r, onReplay, onReset, showdown }: { result: 
               <p className="mt-1 text-mute">{r.channel.handle}{r.demo ? " · demo data, all names fictional" : ""}</p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={onReplay} className="border border-bone/25 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors hover:border-bone/60">Replay story</button>
-            <button onClick={onReset} className="bg-bone px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink transition-opacity hover:opacity-85">Analyze another channel</button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <button onClick={onReplay} className="border border-bone/25 px-5 py-3.5 sm:py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors hover:border-bone/60">Replay story</button>
+            <button onClick={onReset} className="bg-bone px-5 py-3.5 sm:py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink transition-opacity hover:opacity-85">Analyze another channel</button>
           </div>
         </div>
 
-        <section className="mt-10 grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-10 grid grid-cols-2 gap-x-5 gap-y-6 lg:grid-cols-4">
           {[
             ["comments read", fmtInt(r.totals.comments), undefined],
             ["commenters profiled", fmtInt(r.totals.commenters), undefined],

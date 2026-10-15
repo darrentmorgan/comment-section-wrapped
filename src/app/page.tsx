@@ -100,7 +100,8 @@ export default function Home() {
           }}
         />
       )}
-      <div className={`fixed right-[max(0.75rem,2vmin)] z-50 ${phase === "story" ? "top-[calc(max(0.75rem,2vmin)+14px)]" : "top-4"}`}>
+      {/* On scrolling pages a fixed toggle covers content on a phone, so there it scrolls away with the page. */}
+      <div className={`fixed right-[max(0.75rem,2vmin)] z-50 ${phase === "story" ? "top-[calc(max(0.75rem,2vmin)+14px)]" : "top-4"} ${phase === "idle" || phase === "dashboard" ? "max-sm:absolute" : ""}`}>
         <StreamerToggle on={streamer} onChange={setStreamer} />
       </div>
       {debug && state.replayId && (

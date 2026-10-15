@@ -73,7 +73,7 @@ export function StreamerToggle({ on, onChange, className = "" }: { on: boolean; 
       onClick={() => onChange(!on)}
       className={`group flex items-center gap-2.5 border border-bone/25 bg-ink py-1.5 pl-3 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors hover:border-bone/50 ${className}`}
     >
-      <span className="text-mute group-aria-checked:text-bone">Streamer mode</span>
+      <span className="text-mute group-aria-checked:text-bone">Streamer<span className="max-sm:hidden"> mode</span></span>
       {/* A light knob on a coloured track reads as "on" at a glance; the dark knob on a light track read backwards. */}
       {/* left-0 matters: without it the knob's static position sits 20px in, so "off" looked like "on". */}
       <span className={`relative block h-5 w-10 shrink-0 rounded-full transition-colors ${on ? "bg-supportive" : "bg-bone/15"}`}>
