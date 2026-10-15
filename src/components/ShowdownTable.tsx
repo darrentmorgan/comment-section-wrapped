@@ -42,19 +42,22 @@ export function ShowdownTable({ view }: { view: ShowdownView }) {
     );
   };
   const group = "border-l border-bone/15";
+  // on a phone the table scrolls sideways, so the reader names stay pinned on the left
+  const stick = "sticky left-0 z-10 min-w-[10.5rem] bg-ink shadow-[1px_0_0_rgba(239,232,218,0.15)]";
   return (
     <>
+      <p className="mt-3 text-[13px] text-mute sm:hidden">Swipe the table sideways for cost and speed.</p>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[900px] text-left text-sm">
           <thead className="kicker border-b border-bone/30 !normal-case [&_th]:!tracking-[0.1em] [&_th]:uppercase">
             <tr className="text-bone/60">
-              <th />
+              <th className="sticky left-0 z-10 bg-ink" />
               <th className="px-2 px-2 pt-1 font-semibold">Quality</th>
               <th colSpan={3} className={`px-2 px-2 pt-1 font-semibold ${group}`}>Cost</th>
               <th colSpan={5} className={`px-2 pt-1 font-semibold ${group}`}>Speed</th>
             </tr>
             <tr>
-              <th className="px-2 py-2 font-semibold">Reader</th>
+              <th className={`px-2 py-2 font-semibold ${stick}`}>Reader</th>
               <th className="px-2 py-2 font-semibold">Agrees with referee</th>
               <th className={`px-2 py-2 font-semibold ${group}`}>This run</th>
               <th className="px-2 py-2 font-semibold">Per 1,000</th>
@@ -69,10 +72,10 @@ export function ShowdownTable({ view }: { view: ShowdownView }) {
           <tbody className="num">
             {rows.map((x) => (
               <tr key={x.id} className="border-t border-bone/15">
-                <td className="px-2 py-2 font-sans font-semibold">
+                <td className={`px-2 py-2 font-sans font-semibold ${stick}`}>
                   {x.label}
-                  {x.mode === "batch" && <span className="ml-2 border border-bone/25 px-2 py-px text-xs font-normal text-mute">batch of 50, vibe only; times are per request</span>}
-                  {x.enabled && x.inFlight !== undefined && x.kind !== "baseline" && <span className="ml-2 text-xs font-normal text-mute">{x.inFlight} at once</span>}
+                  {x.mode === "batch" && <span className="ml-2 border border-bone/25 px-2 py-px text-xs font-normal text-mute"><span className="sm:hidden">batch</span><span className="max-sm:hidden">batch of 50, vibe only; times are per request</span></span>}
+                  {x.enabled && x.inFlight !== undefined && x.kind !== "baseline" && <span className="ml-2 text-xs font-normal text-mute max-sm:hidden">{x.inFlight} at once</span>}
                 </td>
                 {x.enabled ? (
                   <>

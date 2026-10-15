@@ -6,6 +6,7 @@ import type { Vibe } from "@/lib/types";
 import { EASE, Shell, Title } from "./storyKit";
 import { fmtInt, fmtMoney } from "./format";
 import { CommentText } from "./mask";
+import { usePhone } from "./usePortrait";
 import { VIBE_META } from "./vibes";
 import {
   type CodeMissView,
@@ -65,7 +66,8 @@ const MODE_TAG = "batch of 50, vibe only";
 
 function ModeTag({ r }: { r: ShowdownReader }) {
   if (r.mode !== "batch") return null;
-  return <span className="sd-small shrink-0 border border-bone/25 px-2 py-px uppercase tracking-[0.1em] text-[0.8em] text-mute">{MODE_TAG}</span>;
+  // on a phone the full tag wraps to its own line; the footnote spells out what batch means
+  return <span className="sd-small shrink-0 border border-bone/25 px-2 py-px uppercase tracking-[0.1em] text-[0.8em] text-mute"><span className="sm:hidden">batch</span><span className="max-sm:hidden">{MODE_TAG}</span></span>;
 }
 
 /** requests in flight during the race, taken from the per-comment lanes (they share one setting). */
@@ -98,8 +100,9 @@ export function RaceSlide({ view }: { view: ShowdownView }) {
             <Lane key={r.id} r={r} view={view} p={prog[r.id] ?? 0} place={order[r.id]} />
           ))}
         </ul>
+        {/* the agreement slide shows the baselines again, so a phone drops them here to fit the lanes */}
         {dummies.length > 0 && (
-          <div className="flex flex-col gap-1 border-y border-bone/15 py-2.5">
+          <div className="flex flex-col gap-1 border-y border-bone/15 py-2.5 max-sm:hidden">
             <p className="kicker">Free baselines, no model: done before the race starts</p>
             <p className="st-meta text-bone/70">{dummies.map((r) => r.label).join(" · ")}</p>
           </div>
@@ -121,6 +124,8 @@ function Lane({ r, view, p, place }: { r: ShowdownReader; view: ShowdownView; p:
   const done = Math.round(p * view.sampleSize);
   const cost = (r.totalCostUsd ?? (r.costPer1k ?? 0) * (view.sampleSize / 1000)) * p;
   const finished = p >= 1;
+  // the footnote already says how many requests were in flight, so a phone lane keeps to one line
+  const phone = usePhone();
   return (
     <li className="flex flex-col gap-1">
       <div className="sd-lane flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -138,7 +143,7 @@ function Lane({ r, view, p, place }: { r: ShowdownReader; view: ShowdownView; p:
       </div>
       <p className="num sd-small leading-none text-bone/75">
         {fmtInt(done)} read · {fmtMoney(cost, 4)}
-        {finished && r.p50Ms !== undefined && <> · median {fmtMs(r.p50Ms)}{r.mode === "batch" ? " per 50-comment request" : ` with ${r.inFlight ?? "several"} at once`}</>}
+        {finished && r.p50Ms !== undefined && <> · median {fmtMs(r.p50Ms)}{r.mode === "batch" ? (phone ? " per request" : " per 50-comment request") : phone ? "" : ` with ${r.inFlight ?? "several"} at once`}</>}
       </p>
     </li>
   );
@@ -160,12 +165,16 @@ export function CardsSlide({ view }: { view: ShowdownView }) {
   const fastest = [...rankable].filter((r) => (serialAll ? aloneMs(r) : r.p50Ms) !== undefined).sort((a, b) => (serialAll ? aloneMs(a)! - aloneMs(b)! : a.p50Ms! - b.p50Ms!))[0]?.id;
   const anyFailed = shown.some((r) => (r.failureRate ?? 0) > 0);
   const flight = inFlightOf(view);
+  const phone = usePhone();
   return (
     <Shell accent="#7fa88a">
       <div className="flex flex-col gap-3">
         <Title size="big">What each one cost, and how long it took</Title>
         <SimBadge view={view} />
       </div>
+      {phone ? (
+        <PhoneCostList view={view} shown={shown} cheapest={cheapest} fastest={fastest} serialAll={serialAll} />
+      ) : (
       <div className="sd-grid flex-1 content-evenly">
         {shown.map((r, i) => {
           const batch = r.mode === "batch";
@@ -215,7 +224,9 @@ export function CardsSlide({ view }: { view: ShowdownView }) {
           );
         })}
       </div>
-      <p className="sd-small max-w-[78ch] text-bone/60">
+      )}
+      {/* the phone list carries its own one-line legend; the dashboard table repeats these caveats in full */}
+      <p className="sd-small max-w-[78ch] text-bone/60 max-sm:hidden">
         {anyApi && "Costs as reported by each API, weighted to the channel's usual mix of comments. "}
         {anyComputed && "Where an API gave no cost, it is tokens times list price. "}
         {flight ? `Under load means ${flight} requests in flight at once for every per-comment reader; ` : "Under load means each reader's own setting; "}
@@ -225,6 +236,40 @@ export function CardsSlide({ view }: { view: ShowdownView }) {
         {skipped.length > 0 && ` Not run: ${skipped.join(", ")}.`}
       </p>
     </Shell>
+  );
+}
+
+/** Seven cards do not fit a phone screen, so there each reader is one row: cost on the left, speed on the right. */
+function PhoneCostList({ view, shown, cheapest, fastest, serialAll }: { view: ShowdownView; shown: ShowdownReader[]; cheapest?: string; fastest?: string; serialAll: boolean }) {
+  return (
+    <ul className="flex flex-col" aria-label="Cost and speed per reader">
+      {shown.map((r, i) => {
+        const batch = r.mode === "batch";
+        const ms = batch ? r.p50Ms : serialAll ? aloneMs(r) : r.p50Ms;
+        return (
+          <motion.li
+            key={r.id}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + i * 0.08, duration: 0.6, ease: EASE }}
+            className="flex items-center gap-3 border-t border-bone/15 py-2.5"
+          >
+            <span className="h-8 w-[3px] shrink-0" style={{ background: readerColor(view, r.id) }} />
+            <div className="min-w-0 flex-1">
+              <p className="st-meta font-semibold leading-tight">{r.label}</p>
+              <p className="sd-small text-mute">
+                {batch ? "batch of 50, vibe only" : r.id === cheapest && r.id === fastest ? "cheapest · fastest" : r.id === cheapest ? "cheapest" : r.id === fastest ? (serialAll ? "fastest alone" : "fastest under load") : `${r.throughput !== undefined ? r.throughput.toFixed(1) : "n/a"} a second`}
+              </p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className="display num text-[1.5rem] leading-none" style={r.id === cheapest ? { color: "#7fa88a" } : undefined}>{fmtCost1k(r)}</p>
+              <p className="num sd-small text-mute" style={r.id === fastest ? { color: "#7e98b0", fontWeight: 700 } : undefined}>{ms !== undefined ? fmtMs(ms) : "n/a"}{batch ? " per request" : serialAll ? " alone" : ""}</p>
+            </div>
+          </motion.li>
+        );
+      })}
+      <li className="sd-small border-t border-bone/15 pt-2 text-mute">Dollars per 1,000 comments, counting successful answers only. Time is the median {serialAll ? "with one request at a time" : "under load"}.</li>
+    </ul>
   );
 }
 
@@ -244,7 +289,7 @@ function RefereeBars({ view }: { view: ShowdownView }) {
           return (
             <li key={r.id} className="flex flex-col gap-1">
               <div className="st-meta flex items-baseline justify-between gap-3">
-                <span className="truncate font-semibold" style={{ color: c }}>{r.label}</span>
+                <span className="min-w-0 font-semibold leading-tight" style={{ color: c }}>{r.label}</span>
                 <span className="num shrink-0">
                   {fmtPct(v.value)}
                   {v.lo !== undefined && v.hi !== undefined && <span className="text-mute"> ({fmtPct(v.lo)} to {fmtPct(v.hi)})</span>}
@@ -548,7 +593,9 @@ export function VerdictSlide({ view }: { view: ShowdownView }) {
   const models = view.readers.filter((r) => ran(r) && r.kind !== "baseline").length;
   const dummies = view.readers.filter((r) => ran(r) && r.kind === "baseline").length;
   const extra = v.lines.filter((l) => !/^Costs landed|^Median response|^Nobody|agreed with .* most/.test(l.text)).slice(0, 1);
-  const caveats = view.caveats.filter((c) => /not accuracy|sample|Claude|anecdotal|tuned/i.test(c)).slice(0, 4);
+  const phone = usePhone();
+  // a phone has room for the two most important caveats; the dashboard lists them all
+  const caveats = view.caveats.filter((c) => /not accuracy|sample|Claude|anecdotal|tuned/i.test(c)).slice(0, phone ? 2 : 4);
   return (
     <Shell accent="#9a9282">
       <div className="flex flex-col gap-3">
@@ -563,10 +610,10 @@ export function VerdictSlide({ view }: { view: ShowdownView }) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.3, duration: 0.7, ease: EASE }}
-              className="flex flex-col gap-1 border-t border-bone/30 pt-[clamp(0.6rem,1.6vmin,1.2rem)]"
+              className={phone ? "grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-3 border-t border-bone/30 pt-2.5" : "flex flex-col gap-1 border-t border-bone/30 pt-[clamp(0.6rem,1.6vmin,1.2rem)]"}
             >
               <span className="kicker">{tile.label}</span>
-              <span className="display sd-card-num tabular-nums leading-none">{tile.big}</span>
+              <span className={`display sd-card-num tabular-nums leading-none ${phone ? "col-start-2 row-span-3 row-start-1 self-center text-right" : ""}`}>{tile.big}</span>
               <span className="st-meta font-semibold leading-tight">{tile.reader}</span>
               <span className="sd-small text-mute">{tile.sub}</span>
             </motion.li>
