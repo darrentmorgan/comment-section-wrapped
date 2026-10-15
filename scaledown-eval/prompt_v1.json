@@ -1,0 +1,29 @@
+{
+ "system": "You label YouTube comments left on a hugely popular entertainment creator's videos. Most comments are fans reacting. Pick the single best label for how the commenter comes across. Ordinary fan reactions, greetings, shout-outs, and requests to be in the creator's videos are supportive. Jokes, memes, and sarcastic quips are funny even when about the creator. Only use question when the commenter genuinely asks something and expects an answer. Only use spam for bots, links, ads, scams, or self-promotion.",
+ "labels": [
+  {
+   "name": "toxic",
+   "rubric": "Does this comment insult, mock, threaten, or hate on the creator or other people with real nastiness?"
+  },
+  {
+   "name": "critical",
+   "rubric": "Does this comment complain, disagree, or say something is bad, fake, overdone, or disappointing?"
+  },
+  {
+   "name": "supportive",
+   "rubric": "Does this comment express love, praise, thanks, excitement, encouragement, a fan reaction, a greeting, or a request to be part of the creator's videos?"
+  },
+  {
+   "name": "funny",
+   "rubric": "Is this comment a joke, meme, roast, pun, sarcastic quip, or playful humorous reaction?"
+  },
+  {
+   "name": "question",
+   "rubric": "Does this comment contain a real question that is looking for an answer, such as asking who, what, why, how, when, or where?"
+  },
+  {
+   "name": "spam",
+   "rubric": "Is this comment a bot-like or promotional message: a link, advert, scam, self-promotion, or copy-pasted text begging for money or prizes?"
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "system": "You label YouTube comments left on a hugely popular entertainment creator's videos, in any language. Pick the single best label for how the commenter comes across. Do not default to supportive: use it for warmth, praise, thanks, excitement, greetings, shout-outs, and fans asking the creator for money, gifts, or help (even short asks like 'give me an iPhone please'). Jokes, teasing, absurd or exaggerated wishes, cheeky remarks about people in the video, and reactions like 'bro...', 'ain't no way', 'is crazy', or laughing/skull emoji (😂 😭 💀) are funny, even when the words sound negative. Critical is a sincere complaint, disappointment, sadness, disagreement, or a request for the creator to change something, even when mild or not in English. Real insults, slurs, or calling someone names like a snake are toxic. Spam is only bots, links, ads, scams, gibberish, keyboard noise, and bare timestamps. 'Who is watching from X' and rhetorical or joking questions are not question; use question only when the commenter genuinely wants an answer.",
+ "labels": [
+  {
+   "name": "toxic",
+   "rubric": "Does this comment insult, slur, threaten, or hate on the creator or someone in the video, in any language?"
+  },
+  {
+   "name": "critical",
+   "rubric": "Is this comment a sincere complaint, disagreement, disappointment, sadness, or a request for the creator to change something (not a joke)?"
+  },
+  {
+   "name": "supportive",
+   "rubric": "Does this comment express love, praise, thanks, excitement, a greeting, a shout-out, or a fan asking the creator for money, gifts, or help?"
+  },
+  {
+   "name": "funny",
+   "rubric": "Is this comment a joke, meme, tease, roast, absurd wish, sarcastic quip, exaggerated reaction, or laughing/skull emoji?"
+  },
+  {
+   "name": "question",
+   "rubric": "Does this comment ask a real question that the commenter wants answered (not rhetorical, not 'who is watching')?"
+  },
+  {
+   "name": "spam",
+   "rubric": "Is this comment bot-like, promotional, a link, a scam, gibberish, keyboard noise, or a bare timestamp?"
+  }
+ ]
+}

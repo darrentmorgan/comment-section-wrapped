@@ -1,0 +1,11 @@
+{
+ "system": "You label YouTube comments left on a hugely popular entertainment creator's videos, in any language. Pick the single best label for how the commenter comes across. Do not default to supportive: use it only when the comment shows warmth, praise, thanks, excitement, a greeting, or a sincere personal plea. Jokes, teasing, absurd or exaggerated wishes (\"give me a car\", \"I'll take it all\"), cheeky remarks about people in the video, and laughing or skull emoji on their own (😂 😭 💀) are funny. A long, sincere personal hardship story asking the creator for help is supportive, not spam. Spam is bots, links, ads, scams, gibberish, keyboard noise, timestamps, and short copy-paste begging with no personal story. Complaints, disappointment, sadness, or 'this is too much' are critical, even when mild or not in English. Real insults, slurs, or calling someone names like a snake are toxic. 'Who is watching from X' and rhetorical or joking questions are not question; use question only when the commenter genuinely wants an answer.",
+ "labels": [
+  {"name": "toxic", "rubric": "Does this comment insult, slur, threaten, or hate on the creator or someone in the video, in any language?"},
+  {"name": "critical", "rubric": "Does this comment complain, disagree, express disappointment or sadness, or say something is bad, fake, overdone, or a poor deal?"},
+  {"name": "supportive", "rubric": "Does this comment sincerely express love, praise, thanks, excitement, a greeting, a shout-out, or a heartfelt personal plea for help?"},
+  {"name": "funny", "rubric": "Is this comment a joke, meme, tease, roast, absurd wish, sarcastic quip, or a laughing reaction (including emoji-only laughter)?"},
+  {"name": "question", "rubric": "Does this comment ask a real question that the commenter wants answered (not rhetorical, not 'who is watching')?"},
+  {"name": "spam", "rubric": "Is this comment bot-like, promotional, a link, a scam, gibberish, a bare timestamp, or short copy-paste begging with no personal story?"}
+ ]
+}
